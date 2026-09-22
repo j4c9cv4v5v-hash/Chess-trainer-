@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chess Trainer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #f4f1e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #222;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+      background: white;
+      padding: 40px 25px;
+      border-radius: 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .chess-icon {
+      font-size: 80px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #2f6b4f;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="chess-icon">♟️</div>
+
+    <h1>Chess Trainer</h1>
+
+    <p>
+      ברוכים הבאים ללימוד שחמט 🎓
+      <br>
+      נלמד לשחק שלב אחרי שלב.
+    </p>
+
+    <button onclick="startApp()">
+      מתחילים
+    </button>
+
+  </div>
+
+  <script>
+    function startApp() {
+      alert("האפליקציה עובדת! ♟️");
+    }
+  </script>
+
+</body>
+</html>
