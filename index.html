@@ -446,7 +446,8 @@
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
-      border-radius: 14px;
+      border: 3px solid var(--green-dark);
+      border-radius: 0;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,.13);
       direction: ltr;
@@ -544,6 +545,92 @@
       cursor: pointer;
     }
 
+    .settings-button {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,.07);
+    }
+
+    .settings-wrap {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .settings-section {
+      background: white;
+      border-radius: 22px;
+      padding: 19px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .settings-section h3 {
+      margin-bottom: 7px;
+    }
+
+    .settings-section p {
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .save-code {
+      width: 100%;
+      min-height: 115px;
+      resize: vertical;
+      border: 2px solid #d9e1dc;
+      border-radius: 15px;
+      padding: 13px;
+      font-size: 16px;
+      line-height: 1.45;
+      direction: ltr;
+      text-align: left;
+      background: #fafcfb;
+      color: var(--text);
+      outline: none;
+      overflow-wrap: anywhere;
+    }
+
+    .save-code:focus {
+      border-color: var(--green);
+    }
+
+    .settings-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .settings-actions .primary-button,
+    .settings-actions .secondary-button {
+      margin-top: 0;
+      padding: 14px 10px;
+      font-size: 16px;
+    }
+
+    .settings-message {
+      min-height: 22px;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .settings-message.good {
+      color: #235d3e;
+    }
+
+    .settings-message.bad {
+      color: #9b3939;
+    }
+
     @media (min-width: 600px) {
       .piece-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -572,6 +659,10 @@
 
       <button class="secondary-button" onclick="showLevels()">
         המשך מההתקדמות שלי
+      </button>
+
+      <button class="secondary-button" onclick="openSettings('homeScreen')">
+        ⚙️ הגדרות
       </button>
 
       <div class="footer-note">
@@ -647,7 +738,7 @@
     <div class="topbar">
       <button class="back-button" onclick="showScreen('homeScreen')">→</button>
       <div class="topbar-title">מסלול הלימוד</div>
-      <div style="width:44px"></div>
+      <button class="settings-button" onclick="openSettings('levelsScreen')" aria-label="הגדרות">⚙️</button>
     </div>
 
     <div class="levels-wrap">
@@ -678,7 +769,7 @@
           <div class="level-number">2</div>
           <div class="level-info">
             <strong>מהלכים מיוחדים</strong>
-            <span>הצרחה, קידום רגלי ו־En Passant</span>
+            <span>הצרחה, קידום חייל ו־En Passant</span>
           </div>
           <div class="level-status">🔒</div>
         </button>
@@ -856,6 +947,68 @@
     </div>
   </section>
 
+  <section id="settingsScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="closeSettings()">→</button>
+      <div class="topbar-title">הגדרות</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="settings-wrap">
+
+      <div class="settings-section">
+        <h3>💾 ייצוא קוד שמירה</h3>
+        <p>
+          צרי קוד שמכיל את ההתקדמות הנוכחית. אפשר לשמור אותו ולהדביק אותו
+          במכשיר או בגרסה חדשה של האפליקציה.
+        </p>
+
+        <textarea
+          id="exportSaveCode"
+          class="save-code"
+          readonly
+          placeholder="לחצי על יצירת קוד שמירה"
+          aria-label="קוד שמירה לייצוא"
+        ></textarea>
+
+        <div class="settings-actions">
+          <button class="primary-button" onclick="generateSaveCode()">
+            יצירת קוד
+          </button>
+
+          <button class="secondary-button" onclick="copySaveCode()">
+            העתקת קוד
+          </button>
+        </div>
+
+        <div id="exportMessage" class="settings-message"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3>📥 ייבוא קוד שמירה</h3>
+        <p>
+          הדביקי כאן קוד שמירה קודם. לאחר השחזור, ההתקדמות והשלבים הפתוחים
+          יתעדכנו מיד.
+        </p>
+
+        <textarea
+          id="importSaveCode"
+          class="save-code"
+          placeholder="הדביקי כאן את קוד השמירה"
+          aria-label="קוד שמירה לייבוא"
+        ></textarea>
+
+        <button class="primary-button" onclick="importSaveCode()">
+          שחזור התקדמות
+        </button>
+
+        <div id="importMessage" class="settings-message"></div>
+      </div>
+
+    </div>
+  </section>
+
   <section id="futureScreen" class="screen center-screen">
 
     <div class="locked-message">
@@ -881,12 +1034,12 @@
 <script>
   const pieces = {
     pawn: {
-      name: "רגלי",
+      name: "חייל",
       symbol: "♙",
-      description: "הרגלי הוא הכלי שנמצא בקו הראשון של הצבא שלך. הוא מתקדם קדימה בלבד.",
-      movement: "הרגלי מתקדם משבצת אחת קדימה. במהלך הראשון שלו הוא יכול לבחור להתקדם שתי משבצות.",
-      tip: "רגלי לא נע אחורה. בהמשך נלמד שהוא אוכל כלים בצורה שונה מהתנועה הרגילה שלו.",
-      wrong: "הרגלי נע רק קדימה. מהעמדה ההתחלתית הוא יכול להתקדם משבצת אחת או שתיים."
+      description: "החייל מתקדם רק קדימה. בדרך כלל הוא מתקדם משבצת אחת בכל מהלך.",
+      movement: "החייל מתקדם משבצת אחת קדימה. רק כשהוא נמצא בעמדת הפתיחה שלו, הוא יכול לבחור להתקדם שתי משבצות.",
+      tip: "החייל לא יכול ללכת אחורה. בהמשך נלמד שהוא אוכל כלים באלכסון ולא באותה צורה שבה הוא מתקדם.",
+      wrong: "החייל מתקדם רק קדימה, משבצת אחת. רק מעמדת הפתיחה שלו אפשר להתקדם שתי משבצות."
     },
 
     rook: {
@@ -948,6 +1101,7 @@
   let selectedPiece = null;
   let streak = 0;
   let isTransitioning = false;
+  let settingsReturnScreen = "homeScreen";
 
   let piecePosition = {
     row: 4,
@@ -1412,6 +1566,209 @@
       "השלב עדיין נעול 🔒";
 
     showScreen("futureScreen");
+  }
+
+  function openSettings(returnScreen = "homeScreen") {
+    settingsReturnScreen = returnScreen;
+
+    document.getElementById("exportSaveCode").value = "";
+    document.getElementById("importSaveCode").value = "";
+    setSettingsMessage("exportMessage", "", "");
+    setSettingsMessage("importMessage", "", "");
+
+    showScreen("settingsScreen");
+  }
+
+  function closeSettings() {
+    if (settingsReturnScreen === "levelsScreen") {
+      showLevels();
+      return;
+    }
+
+    showScreen(settingsReturnScreen || "homeScreen");
+  }
+
+  function setSettingsMessage(id, message, type) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.className = "settings-message" + (type ? " " + type : "");
+  }
+
+  function encodeSavePayload(payload) {
+    const json = JSON.stringify(payload);
+    const bytes = new TextEncoder().encode(json);
+    let binary = "";
+
+    bytes.forEach(byte => {
+      binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  }
+
+  function decodeSavePayload(code) {
+    let base64 = code.replace(/-/g, "+").replace(/_/g, "/");
+
+    while (base64.length % 4 !== 0) {
+      base64 += "=";
+    }
+
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(
+      binary,
+      char => char.charCodeAt(0)
+    );
+
+    return JSON.parse(
+      new TextDecoder().decode(bytes)
+    );
+  }
+
+  function generateSaveCode() {
+    const payload = {
+      app: "chess-trainer",
+      version: 1,
+      savedAt: new Date().toISOString(),
+      progress: getProgress()
+    };
+
+    const code =
+      "CHESS1-" +
+      encodeSavePayload(payload);
+
+    document.getElementById("exportSaveCode").value = code;
+
+    setSettingsMessage(
+      "exportMessage",
+      "קוד השמירה נוצר.",
+      "good"
+    );
+  }
+
+  async function copySaveCode() {
+    const field = document.getElementById("exportSaveCode");
+    let code = field.value.trim();
+
+    if (!code) {
+      generateSaveCode();
+      code = field.value.trim();
+    }
+
+    try {
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        field.focus();
+        field.select();
+        field.setSelectionRange(0, field.value.length);
+
+        const copied =
+          document.execCommand &&
+          document.execCommand("copy");
+
+        if (!copied) {
+          throw new Error("copy failed");
+        }
+      }
+
+      setSettingsMessage(
+        "exportMessage",
+        "הקוד הועתק.",
+        "good"
+      );
+    } catch {
+      field.focus();
+      field.select();
+      field.setSelectionRange(0, field.value.length);
+
+      setSettingsMessage(
+        "exportMessage",
+        "הקוד מסומן. העתיקי אותו ידנית.",
+        ""
+      );
+    }
+  }
+
+  function importSaveCode() {
+    const raw =
+      document.getElementById("importSaveCode").value.trim();
+
+    if (!raw) {
+      setSettingsMessage(
+        "importMessage",
+        "צריך להדביק קוד שמירה.",
+        "bad"
+      );
+      return;
+    }
+
+    try {
+      const normalized =
+        raw.replace(/\s+/g, "");
+
+      if (!normalized.startsWith("CHESS1-")) {
+        throw new Error("invalid prefix");
+      }
+
+      const payload =
+        decodeSavePayload(
+          normalized.slice(7)
+        );
+
+      if (
+        !payload ||
+        payload.app !== "chess-trainer" ||
+        !payload.progress ||
+        !Array.isArray(payload.progress.completedPieces)
+      ) {
+        throw new Error("invalid payload");
+      }
+
+      const allowedPieces =
+        Object.keys(pieces);
+
+      const completedPieces =
+        [...new Set(
+          payload.progress.completedPieces.filter(
+            key => allowedPieces.includes(key)
+          )
+        )];
+
+      const restoredProgress = {
+        ...payload.progress,
+        completedPieces
+      };
+
+      const sure =
+        confirm(
+          "לשחזר את ההתקדמות מהקוד? ההתקדמות הנוכחית תוחלף."
+        );
+
+      if (!sure) {
+        return;
+      }
+
+      saveProgress(restoredProgress);
+      updateLevelProgress();
+
+      setSettingsMessage(
+        "importMessage",
+        "ההתקדמות שוחזרה בהצלחה ✅",
+        "good"
+      );
+    } catch {
+      setSettingsMessage(
+        "importMessage",
+        "קוד השמירה לא תקין. בדקי שהודבק במלואו.",
+        "bad"
+      );
+    }
   }
 
   function randomInt(min, max) {
