@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#173f35">
+  <title>Chess Trainer</title>
+
+  <style>
+    :root {
+      --green-dark: #173f35;
+      --green: #245c4c;
+      --green-light: #dcebe5;
+      --cream: #f4f0e6;
+      --white: #ffffff;
+      --text: #1f2925;
+      --muted: #6d7772;
+      --gold: #d7a94c;
+      --danger: #c55252;
+      --light-square: #eee5d3;
+      --dark-square: #759785;
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--cream);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        20px
+        max(24px, env(safe-area-inset-bottom));
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .center-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 470px;
+      background: var(--white);
+      border-radius: 30px;
+      padding: 28px 22px;
+      box-shadow: 0 14px 40px rgba(25, 45, 38, 0.12);
+    }
+
+    .hero-piece {
+      font-size: 92px;
+      line-height: 1;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 27px;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 20px;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .primary-button,
+    .secondary-button {
+      width: 100%;
+      border: none;
+      border-radius: 17px;
+      padding: 17px 20px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .primary-button {
+      background: var(--green-dark);
+      color: white;
+    }
+
+    .primary-button:active {
+      transform: scale(0.985);
+    }
+
+    .secondary-button {
+      background: #edf2ef;
+      color: var(--green-dark);
+    }
+
+    .small-button {
+      border: none;
+      background: transparent;
+      color: var(--green-dark);
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar-title {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .back-button {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,.07);
+    }
+
+    .intro-list {
+      display: grid;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .intro-item {
+      background: #f5f7f5;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .intro-icon {
+      font-size: 30px;
+      flex: 0 0 auto;
+    }
+
+    .intro-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .intro-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .levels-wrap {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .progress-box {
+      background: white;
+      border-radius: 20px;
+      padding: 17px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      margin-bottom: 9px;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5ebe7;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width .3s ease;
+    }
+
+    .level-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    .level-card {
+      width: 100%;
+      border: none;
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-align: right;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .level-card.locked {
+      opacity: .52;
+      cursor: default;
+    }
+
+    .level-number {
+      width: 49px;
+      height: 49px;
+      border-radius: 16px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .level-info {
+      flex: 1;
+    }
+
+    .level-info strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 3px;
+    }
+
+    .level-info span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .level-status {
+      font-size: 24px;
+    }
+
+    .piece-grid {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 13px;
+    }
+
+    .piece-card {
+      position: relative;
+      min-height: 155px;
+      background: white;
+      border: none;
+      border-radius: 22px;
+      padding: 18px 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .piece-card.completed {
+      border: 2px solid #6ba68c;
+      background: #f3faf6;
+    }
+
+    .piece-symbol {
+      font-size: 55px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .piece-name {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .piece-progress {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .complete-badge {
+      position: absolute;
+      top: 11px;
+      left: 11px;
+      background: var(--green);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .lesson-card {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    }
+
+    .lesson-piece {
+      font-size: 76px;
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .movement-box {
+      background: #f2f6f3;
+      border-radius: 18px;
+      padding: 15px;
+      margin: 18px 0;
+    }
+
+    .movement-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .movement-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .practice-wrap {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .practice-head {
+      background: white;
+      border-radius: 20px;
+      padding: 15px 17px;
+      margin-bottom: 14px;
+      box-shadow: 0 5px 16px rgba(0,0,0,.06);
+    }
+
+    .practice-title {
+      font-weight: 900;
+      font-size: 19px;
+    }
+
+    .streak {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .streak-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #d5ddd8;
+    }
+
+    .streak-dot.on {
+      background: var(--green);
+    }
+
+    .board {
+      width: min(92vw, 500px);
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.13);
+      direction: ltr;
+      user-select: none;
+    }
+
+    .square {
+      position: relative;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(28px, 9vw, 51px);
+      cursor: pointer;
+    }
+
+    .square.light {
+      background: var(--light-square);
+    }
+
+    .square.dark {
+      background: var(--dark-square);
+    }
+
+    .square.selected::after {
+      content: "";
+      position: absolute;
+      inset: 8%;
+      border: 3px solid rgba(23,63,53,.85);
+      border-radius: 12px;
+    }
+
+    .feedback {
+      min-height: 66px;
+      margin-top: 14px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: white;
+      text-align: center;
+      box-shadow: 0 5px 16px rgba(0,0,0,.05);
+    }
+
+    .feedback.good {
+      background: #e9f6ee;
+      color: #235d3e;
+    }
+
+    .feedback.bad {
+      background: #fff0f0;
+      color: #9b3939;
+    }
+
+    .feedback strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .completion {
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    .completion-icon {
+      font-size: 74px;
+      margin-bottom: 12px;
+    }
+
+    .locked-message {
+      background: white;
+      border-radius: 26px;
+      padding: 28px 22px;
+      max-width: 470px;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    }
+
+    .locked-message .icon {
+      font-size: 65px;
+      margin-bottom: 14px;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .reset-link {
+      border: none;
+      background: none;
+      color: var(--muted);
+      text-decoration: underline;
+      font-size: 12px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 600px) {
+      .piece-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <section id="homeScreen" class="screen active center-screen">
+    <div class="card center">
+      <div class="hero-piece">♟️</div>
+      <h1>Chess Trainer</h1>
+
+      <p class="subtitle">
+        לומדים שחמט מהצעד הראשון,
+        בצורה פשוטה, אינטראקטיבית ובקצב שלך.
+      </p>
+
+      <button class="primary-button" onclick="showIntro()">
+        מתחילים
+      </button>
+
+      <button class="secondary-button" onclick="showLevels()">
+        המשך מההתקדמות שלי
+      </button>
+
+      <div class="footer-note">
+        ההתקדמות נשמרת במכשיר הזה
+      </div>
+    </div>
+  </section>
+
+  <section id="introScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="showScreen('homeScreen')">→</button>
+      <div class="topbar-title">לפני שמתחילים</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="card" style="margin:auto">
+
+      <div class="hero-piece" style="font-size:70px">♔</div>
+
+      <h2 class="center">מה המטרה בשחמט?</h2>
+
+      <p class="subtitle center">
+        לפני שלומדים להזיז את הכלים,
+        חשוב להבין מה אנחנו מנסים להשיג.
+      </p>
+
+      <div class="intro-list">
+
+        <div class="intro-item">
+          <div class="intro-icon">👑</div>
+          <div>
+            <strong>המטרה היא המלך</strong>
+            <p>המטרה היא להביא את מלך היריב למצב של שח־מט.</p>
+          </div>
+        </div>
+
+        <div class="intro-item">
+          <div class="intro-icon">⚠️</div>
+          <div>
+            <strong>מה זה שח?</strong>
+            <p>שח אומר שהמלך נמצא תחת איום וצריך להגן עליו.</p>
+          </div>
+        </div>
+
+        <div class="intro-item">
+          <div class="intro-icon">🏁</div>
+          <div>
+            <strong>ומה זה שח־מט?</strong>
+            <p>המלך נמצא בשח ואין שום מהלך חוקי שיכול להציל אותו.</p>
+          </div>
+        </div>
+
+        <div class="intro-item">
+          <div class="intro-icon">🔄</div>
+          <div>
+            <strong>משחקים בתורות</strong>
+            <p>הלבן מתחיל, ואז כל שחקן מבצע מהלך אחד בתורו.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="primary-button" onclick="showLevels()">
+        הבנתי, בואי נלמד
+      </button>
+
+    </div>
+  </section>
+
+  <section id="levelsScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="showScreen('homeScreen')">→</button>
+      <div class="topbar-title">מסלול הלימוד</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="levels-wrap">
+
+      <div class="progress-box">
+        <div class="progress-row">
+          <strong>ההתקדמות שלך</strong>
+          <span id="overallProgressText">0%</span>
+        </div>
+
+        <div class="progress-track">
+          <div id="overallProgressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="level-grid">
+
+        <button class="level-card" onclick="openLevel1()">
+          <div class="level-number">1</div>
+          <div class="level-info">
+            <strong>הכרת הכלים</strong>
+            <span>איך כל כלי זז על הלוח</span>
+          </div>
+          <div id="level1Status" class="level-status">▶️</div>
+        </button>
+
+        <button id="level2Card" class="level-card locked" onclick="openFutureLevel(2)">
+          <div class="level-number">2</div>
+          <div class="level-info">
+            <strong>מהלכים מיוחדים</strong>
+            <span>הצרחה, קידום רגלי ו־En Passant</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(3)">
+          <div class="level-number">3</div>
+          <div class="level-info">
+            <strong>מצבים פשוטים</strong>
+            <span>שימוש בתנועות בתוך מצבי משחק</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(4)">
+          <div class="level-number">4</div>
+          <div class="level-info">
+            <strong>שח ושח־מט</strong>
+            <span>לזהות שח ולהגן על המלך</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(5)">
+          <div class="level-number">5</div>
+          <div class="level-info">
+            <strong>ניהול איומים</strong>
+            <span>כמה כלים מותקפים ומה חשוב יותר</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(6)">
+          <div class="level-number">6</div>
+          <div class="level-info">
+            <strong>לחשוב מהלך קדימה</strong>
+            <span>מה היריב יכול לעשות אחרי המהלך שלי?</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(7)">
+          <div class="level-number">7</div>
+          <div class="level-info">
+            <strong>בניית התקפה</strong>
+            <span>איך ליצור איום ולא רק להגיב</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+        <button class="level-card locked" onclick="openFutureLevel(8)">
+          <div class="level-number">8</div>
+          <div class="level-info">
+            <strong>פתיחת משחק</strong>
+            <span>עקרונות לפתיחה נכונה</span>
+          </div>
+          <div class="level-status">🔒</div>
+        </button>
+
+      </div>
+
+      <div class="center">
+        <button class="reset-link" onclick="resetProgress()">
+          איפוס התקדמות
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="pieceSelectScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="showLevels()">→</button>
+      <div class="topbar-title">שלב 1 — הכרת הכלים</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div style="width:100%;max-width:520px;margin:0 auto 18px;">
+      <h2 style="margin-bottom:5px">איזה כלי נלמד?</h2>
+      <p class="subtitle">
+        אפשר לבחור בכל סדר.
+        צריך להשלים את כל ששת הכלים כדי לעבור לשלב הבא.
+      </p>
+    </div>
+
+    <div id="pieceGrid" class="piece-grid"></div>
+
+  </section>
+
+  <section id="pieceLessonScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="openLevel1()">→</button>
+      <div id="lessonTopTitle" class="topbar-title">לימוד כלי</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="lesson-card">
+
+      <div id="lessonPieceSymbol" class="lesson-piece">♟</div>
+
+      <h2 id="lessonPieceName" class="center"></h2>
+
+      <p id="lessonDescription" class="subtitle center"></p>
+
+      <div class="movement-box">
+        <strong>איך הכלי זז?</strong>
+        <p id="lessonMovement"></p>
+      </div>
+
+      <div class="movement-box">
+        <strong>חשוב לזכור</strong>
+        <p id="lessonTip"></p>
+      </div>
+
+      <button class="primary-button" onclick="startPractice()">
+        מתחילים לתרגל
+      </button>
+
+    </div>
+  </section>
+
+  <section id="practiceScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="returnToLesson()">→</button>
+      <div id="practiceTopTitle" class="topbar-title">תרגול</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="practice-wrap">
+
+      <div class="practice-head center">
+        <div id="practiceTitle" class="practice-title"></div>
+
+        <div class="subtitle">
+          לחצי על משבצת שאליה הכלי יכול לזוז
+        </div>
+
+        <div class="streak">
+          <div id="dot1" class="streak-dot"></div>
+          <div id="dot2" class="streak-dot"></div>
+          <div id="dot3" class="streak-dot"></div>
+        </div>
+      </div>
+
+      <div id="chessBoard" class="board"></div>
+
+      <div id="feedbackBox" class="feedback">
+        <strong>התור שלך</strong>
+        בחרי מהלך חוקי.
+      </div>
+
+    </div>
+  </section>
+
+  <section id="pieceCompleteScreen" class="screen center-screen">
+
+    <div class="card completion">
+
+      <div class="completion-icon">🎉</div>
+
+      <h2>מעולה!</h2>
+
+      <p id="pieceCompleteText" class="subtitle"></p>
+
+      <button class="primary-button" onclick="openLevel1()">
+        חזרה לבחירת הכלים
+      </button>
+
+      <button class="secondary-button" onclick="showLevels()">
+        למסלול הלימוד
+      </button>
+
+    </div>
+  </section>
+
+  <section id="futureScreen" class="screen center-screen">
+
+    <div class="locked-message">
+
+      <div class="icon">🚧</div>
+
+      <h2 id="futureTitle">השלב הבא</h2>
+
+      <p class="subtitle">
+        המבנה כבר מוכן.
+        את התוכן האינטראקטיבי של השלב הזה נבנה בהמשך.
+      </p>
+
+      <button class="primary-button" onclick="showLevels()">
+        חזרה למסלול
+      </button>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const pieces = {
+    pawn: {
+      name: "רגלי",
+      symbol: "♙",
+      description: "הרגלי הוא הכלי שנמצא בקו הראשון של הצבא שלך. הוא מתקדם קדימה בלבד.",
+      movement: "הרגלי מתקדם משבצת אחת קדימה. במהלך הראשון שלו הוא יכול לבחור להתקדם שתי משבצות.",
+      tip: "רגלי לא נע אחורה. בהמשך נלמד שהוא אוכל כלים בצורה שונה מהתנועה הרגילה שלו.",
+      wrong: "הרגלי נע רק קדימה. מהעמדה ההתחלתית הוא יכול להתקדם משבצת אחת או שתיים."
+    },
+
+    rook: {
+      name: "צריח",
+      symbol: "♖",
+      description: "הצריח הוא כלי חזק מאוד שאוהב קווים ישרים.",
+      movement: "הצריח יכול לנוע כמה משבצות שרוצים למעלה, למטה, ימינה או שמאלה.",
+      tip: "הצריח לא זז באלכסון.",
+      wrong: "הצריח יכול לנוע רק בקו ישר — לאורך שורה או טור."
+    },
+
+    knight: {
+      name: "פרש",
+      symbol: "♘",
+      description: "הפרש הוא כלי מיוחד עם תנועה שאין לאף כלי אחר.",
+      movement: "הפרש נע בצורת האות ר׳: שתי משבצות לכיוון אחד ועוד משבצת לצד.",
+      tip: "הפרש הוא הכלי היחיד שיכול לקפוץ מעל כלים אחרים.",
+      wrong: "חפשי צורת ר׳: שתי משבצות בכיוון אחד ועוד אחת לצד."
+    },
+
+    bishop: {
+      name: "רץ",
+      symbol: "♗",
+      description: "הרץ נע במהירות לאורך האלכסונים של הלוח.",
+      movement: "הרץ יכול לנוע כמה משבצות שרוצים באלכסון.",
+      tip: "רץ שמתחיל על צבע מסוים יישאר תמיד על אותו צבע של משבצות.",
+      wrong: "הרץ יכול לנוע רק באלכסון."
+    },
+
+    queen: {
+      name: "מלכה",
+      symbol: "♕",
+      description: "המלכה היא הכלי בעל אפשרויות התנועה הרבות ביותר.",
+      movement: "המלכה יכולה לנוע כמה משבצות שרוצים בקו ישר או באלכסון.",
+      tip: "אפשר לחשוב עליה כשילוב בין צריח לרץ.",
+      wrong: "המלכה נעה בקו ישר או באלכסון."
+    },
+
+    king: {
+      name: "מלך",
+      symbol: "♔",
+      description: "המלך הוא הכלי החשוב ביותר במשחק. אם אי אפשר להציל אותו משח — המשחק נגמר.",
+      movement: "המלך יכול לנוע משבצת אחת בלבד לכל כיוון.",
+      tip: "המלך חשוב יותר מכל כלי אחר ולכן צריך לשמור עליו.",
+      wrong: "המלך יכול לנוע רק משבצת אחת לכל כיוון."
+    }
+  };
+
+  const stageNames = {
+    2: "מהלכים מיוחדים",
+    3: "מצבים פשוטים",
+    4: "שח ושח־מט",
+    5: "ניהול איומים",
+    6: "לחשוב מהלך קדימה",
+    7: "בניית התקפה",
+    8: "פתיחת משחק"
+  };
+
+  let selectedPiece = null;
+  let streak = 0;
+
+  let piecePosition = {
+    row: 4,
+    col: 4
+  };
+
+  function getProgress() {
+    const saved = localStorage.getItem("chessTrainerProgress");
+
+    if (!saved) {
+      return { completedPieces: [] };
+    }
+
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return { completedPieces: [] };
+    }
+  }
+
+  function saveProgress(progress) {
+    localStorage.setItem(
+      "chessTrainerProgress",
+      JSON.stringify(progress)
+    );
+  }
+
+  function showScreen(id) {
+    document
+      .querySelectorAll(".screen")
+      .forEach(screen => {
+        screen.classList.remove("active");
+      });
+
+    document
+      .getElementById(id)
+      .classList.add("active");
+
+    window.scrollTo(0, 0);
+  }
+
+  function showIntro() {
+    showScreen("introScreen");
+  }
+
+  function showLevels() {
+    updateLevelProgress();
+    showScreen("levelsScreen");
+  }
+
+  function updateLevelProgress() {
+    const progress = getProgress();
+    const completed = progress.completedPieces.length;
+    const percent = Math.round((completed / 6) * 100);
+
+    document.getElementById("overallProgressText").textContent =
+      percent + "%";
+
+    document.getElementById("overallProgressFill").style.width =
+      percent + "%";
+
+    const level1Status = document.getElementById("level1Status");
+
+    if (completed === 6) {
+      level1Status.textContent = "✅";
+
+      const level2 = document.getElementById("level2Card");
+      level2.classList.remove("locked");
+
+      level2.querySelector(".level-status").textContent = "▶️";
+    } else {
+      level1Status.textContent =
+        completed > 0 ? completed + "/6" : "▶️";
+    }
+  }
+
+  function openLevel1() {
+    renderPieceGrid();
+    showScreen("pieceSelectScreen");
+  }
+
+  function renderPieceGrid() {
+    const grid = document.getElementById("pieceGrid");
+    const progress = getProgress();
+
+    grid.innerHTML = "";
+
+    Object.keys(pieces).forEach(key => {
+      const piece = pieces[key];
+
+      const completed =
+        progress.completedPieces.includes(key);
+
+      const button =
+        document.createElement("button");
+
+      button.className =
+        "piece-card" +
+        (completed ? " completed" : "");
+
+      button.onclick =
+        () => openPieceLesson(key);
+
+      button.innerHTML = `
+        ${
+          completed
+            ? '<div class="complete-badge">✓</div>'
+            : ""
+        }
+
+        <div class="piece-symbol">
+          ${piece.symbol}
+        </div>
+
+        <div class="piece-name">
+          ${piece.name}
+        </div>
+
+        <div class="piece-progress">
+          ${
+            completed
+              ? "הושלם"
+              : "3 הצלחות רצופות"
+          }
+        </div>
+      `;
+
+      grid.appendChild(button);
+    });
+  }
+
+  function openPieceLesson(key) {
+    selectedPiece = key;
+
+    const piece = pieces[key];
+
+    document.getElementById("lessonTopTitle").textContent =
+      "לומדים: " + piece.name;
+
+    document.getElementById("lessonPieceSymbol").textContent =
+      piece.symbol;
+
+    document.getElementById("lessonPieceName").textContent =
+      piece.name;
+
+    document.getElementById("lessonDescription").textContent =
+      piece.description;
+
+    document.getElementById("lessonMovement").textContent =
+      piece.movement;
+
+    document.getElementById("lessonTip").textContent =
+      piece.tip;
+
+    showScreen("pieceLessonScreen");
+  }
+
+  function returnToLesson() {
+    if (!selectedPiece) {
+      openLevel1();
+      return;
+    }
+
+    openPieceLesson(selectedPiece);
+  }
+
+  function startPractice() {
+    streak = 0;
+
+    updateStreak();
+    createNewChallenge();
+
+    const piece = pieces[selectedPiece];
+
+    document.getElementById("practiceTopTitle").textContent =
+      "תרגול " + piece.name;
+
+    document.getElementById("practiceTitle").textContent =
+      "הזיזי את ה" + piece.name;
+
+    setFeedback(
+      "התור שלך",
+      "בחרי משבצת שאליה הכלי יכול לזוז.",
+      ""
+    );
+
+    showScreen("practiceScreen");
+  }
+
+  function createNewChallenge() {
+    if (selectedPiece === "pawn") {
+      piecePosition = {
+        row: 6,
+        col: randomInt(1, 6)
+      };
+    } else {
+      piecePosition = {
+        row: randomInt(2, 5),
+        col: randomInt(2, 5)
+      };
+    }
+
+    renderBoard();
+  }
+
+  function renderBoard() {
+    const board = document.getElementById("chessBoard");
+    board.innerHTML = "";
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const square = document.createElement("button");
+
+        square.className =
+          "square " +
+          ((row + col) % 2 === 0 ? "light" : "dark");
+
+        if (
+          row === piecePosition.row &&
+          col === piecePosition.col
+        ) {
+          square.textContent =
+            pieces[selectedPiece].symbol;
+
+          square.classList.add("selected");
+        }
+
+        square.onclick =
+          () => attemptMove(row, col);
+
+        board.appendChild(square);
+      }
+    }
+  }
+
+  function attemptMove(targetRow, targetCol) {
+    if (
+      targetRow === piecePosition.row &&
+      targetCol === piecePosition.col
+    ) {
+      return;
+    }
+
+    const legal =
+      isLegalMove(
+        selectedPiece,
+        piecePosition.row,
+        piecePosition.col,
+        targetRow,
+        targetCol
+      );
+
+    if (legal) {
+      streak++;
+
+      setFeedback(
+        "נכון! ✅",
+        streak < 3
+          ? "מהלך חוקי. ממשיכים."
+          : "שלוש הצלחות רצופות!",
+        "good"
+      );
+
+      updateStreak();
+
+      if (streak >= 3) {
+        setTimeout(
+          completeCurrentPiece,
+          600
+        );
+
+        return;
+      }
+
+      setTimeout(
+        () => {
+          createNewChallenge();
+
+          setFeedback(
+            "התור שלך",
+            "עוד מהלך חוקי אחד.",
+            ""
+          );
+        },
+        550
+      );
+    } else {
+      streak = 0;
+
+      updateStreak();
+
+      setFeedback(
+        "לא בדיוק",
+        pieces[selectedPiece].wrong,
+        "bad"
+      );
+    }
+  }
+
+  function isLegalMove(
+    type,
+    r1,
+    c1,
+    r2,
+    c2
+  ) {
+    const dr = r2 - r1;
+    const dc = c2 - c1;
+
+    const adr = Math.abs(dr);
+    const adc = Math.abs(dc);
+
+    if (type === "rook") {
+      return (
+        (dr === 0 && dc !== 0) ||
+        (dc === 0 && dr !== 0)
+      );
+    }
+
+    if (type === "bishop") {
+      return (
+        adr === adc &&
+        adr !== 0
+      );
+    }
+
+    if (type === "queen") {
+      return (
+        (dr === 0 && dc !== 0) ||
+        (dc === 0 && dr !== 0) ||
+        (adr === adc && adr !== 0)
+      );
+    }
+
+    if (type === "knight") {
+      return (
+        (adr === 2 && adc === 1) ||
+        (adr === 1 && adc === 2)
+      );
+    }
+
+    if (type === "king") {
+      return (
+        adr <= 1 &&
+        adc <= 1 &&
+        (adr + adc) > 0
+      );
+    }
+
+    if (type === "pawn") {
+      if (c1 !== c2) {
+        return false;
+      }
+
+      if (r1 === 6) {
+        return (
+          r2 === 5 ||
+          r2 === 4
+        );
+      }
+
+      return (
+        r2 === r1 - 1
+      );
+    }
+
+    return false;
+  }
+
+  function updateStreak() {
+    for (let i = 1; i <= 3; i++) {
+      const dot =
+        document.getElementById("dot" + i);
+
+      dot.classList.toggle(
+        "on",
+        i <= streak
+      );
+    }
+  }
+
+  function setFeedback(
+    title,
+    text,
+    type
+  ) {
+    const box =
+      document.getElementById("feedbackBox");
+
+    box.className = "feedback";
+
+    if (type) {
+      box.classList.add(type);
+    }
+
+    box.innerHTML = `
+      <strong>${title}</strong>
+      ${text}
+    `;
+  }
+
+  function completeCurrentPiece() {
+    const progress = getProgress();
+
+    if (
+      !progress.completedPieces.includes(
+        selectedPiece
+      )
+    ) {
+      progress.completedPieces.push(
+        selectedPiece
+      );
+    }
+
+    saveProgress(progress);
+
+    const piece = pieces[selectedPiece];
+
+    document.getElementById("pieceCompleteText").textContent =
+      "השלמת את התרגול של " +
+      piece.name +
+      " עם 3 מהלכים חוקיים ברצף.";
+
+    showScreen("pieceCompleteScreen");
+  }
+
+  function openFutureLevel(level) {
+    const progress = getProgress();
+
+    if (
+      level === 2 &&
+      progress.completedPieces.length === 6
+    ) {
+      document.getElementById("futureTitle").textContent =
+        "שלב 2 — " + stageNames[level];
+
+      showScreen("futureScreen");
+      return;
+    }
+
+    document.getElementById("futureTitle").textContent =
+      "השלב עדיין נעול 🔒";
+
+    showScreen("futureScreen");
+  }
+
+  function randomInt(min, max) {
+    return Math.floor(
+      Math.random() *
+      (max - min + 1)
+    ) + min;
+  }
+
+  function resetProgress() {
+    const sure =
+      confirm("לאפס את כל ההתקדמות?");
+
+    if (!sure) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "chessTrainerProgress"
+    );
+
+    updateLevelProgress();
+
+    alert("ההתקדמות אופסה.");
+  }
+
+  updateLevelProgress();
+</script>
+
+</body>
+</html>
