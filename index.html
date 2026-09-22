@@ -25,6 +25,7 @@
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     html,
@@ -444,6 +445,7 @@
       margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
       border-radius: 14px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,.13);
@@ -470,11 +472,8 @@
       background: var(--dark-square);
     }
 
-    .square.selected::after {
-      content: "";
-      position: absolute;
-      inset: 8%;
-      border: 3px solid rgba(23,63,53,.85);
+    .square.selected {
+      box-shadow: inset 0 0 0 3px rgba(23,63,53,.85);
       border-radius: 12px;
     }
 
@@ -948,6 +947,7 @@
 
   let selectedPiece = null;
   let streak = 0;
+  let isTransitioning = false;
 
   let piecePosition = {
     row: 4,
@@ -1011,16 +1011,18 @@
 
     const level1Status = document.getElementById("level1Status");
 
+    const level2 = document.getElementById("level2Card");
+
     if (completed === 6) {
       level1Status.textContent = "✅";
-
-      const level2 = document.getElementById("level2Card");
       level2.classList.remove("locked");
-
       level2.querySelector(".level-status").textContent = "▶️";
     } else {
       level1Status.textContent =
         completed > 0 ? completed + "/6" : "▶️";
+
+      level2.classList.add("locked");
+      level2.querySelector(".level-status").textContent = "🔒";
     }
   }
 
@@ -1138,9 +1140,15 @@
   }
 
   function createNewChallenge() {
+    isTransitioning = false;
+
     if (selectedPiece === "pawn") {
+      // Sometimes use the normal starting rank, and sometimes a more advanced rank.
+      // Only a pawn on row 6 may move two squares; the move rules below enforce that.
+      const useStartingRank = Math.random() < 0.4;
+
       piecePosition = {
-        row: 6,
+        row: useStartingRank ? 6 : randomInt(2, 5),
         col: randomInt(1, 6)
       };
     } else {
@@ -1184,6 +1192,10 @@
   }
 
   function attemptMove(targetRow, targetCol) {
+    if (isTransitioning) {
+      return;
+    }
+
     if (
       targetRow === piecePosition.row &&
       targetCol === piecePosition.col
@@ -1201,12 +1213,20 @@
       );
 
     if (legal) {
+      isTransitioning = true;
       streak++;
+
+      // First show the move on the board so the learner can see where the piece went.
+      piecePosition = {
+        row: targetRow,
+        col: targetCol
+      };
+      renderBoard();
 
       setFeedback(
         "נכון! ✅",
         streak < 3
-          ? "מהלך חוקי. ממשיכים."
+          ? "מהלך חוקי. רואים את התנועה ואז ממשיכים."
           : "שלוש הצלחות רצופות!",
         "good"
       );
@@ -1216,7 +1236,7 @@
       if (streak >= 3) {
         setTimeout(
           completeCurrentPiece,
-          600
+          900
         );
 
         return;
@@ -1232,7 +1252,7 @@
             ""
           );
         },
-        550
+        800
       );
     } else {
       streak = 0;
@@ -1417,6 +1437,14 @@
 
     alert("ההתקדמות אופסה.");
   }
+
+  document.addEventListener(
+    "dblclick",
+    event => {
+      event.preventDefault();
+    },
+    { passive: false }
+  );
 
   updateLevelProgress();
 </script>
