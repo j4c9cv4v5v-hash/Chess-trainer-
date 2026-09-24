@@ -631,6 +631,110 @@
       color: #9b3939;
     }
 
+    .special-grid {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      display: grid;
+      gap: 13px;
+    }
+
+    .special-card {
+      position: relative;
+      width: 100%;
+      min-height: 118px;
+      border: none;
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-align: right;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .special-card.completed {
+      border: 2px solid #6ba68c;
+      background: #f3faf6;
+    }
+
+    .special-card-icon {
+      min-width: 72px;
+      font-size: 42px;
+      line-height: 1;
+      text-align: center;
+      direction: ltr;
+    }
+
+    .special-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .special-card-info strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .special-card-info span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .special-board-note {
+      background: #fff8e8;
+      border: 1px solid #ead39a;
+      border-radius: 15px;
+      padding: 11px 13px;
+      margin: 12px 0 0;
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .square.special-target {
+      box-shadow: inset 0 0 0 4px rgba(215,169,76,.95);
+    }
+
+    .promotion-panel {
+      display: none;
+      background: white;
+      border-radius: 18px;
+      padding: 15px;
+      margin-top: 14px;
+      box-shadow: 0 5px 16px rgba(0,0,0,.06);
+      text-align: center;
+    }
+
+    .promotion-panel.show {
+      display: block;
+    }
+
+    .promotion-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .promotion-choice {
+      min-height: 62px;
+      border: 2px solid #dce4df;
+      border-radius: 14px;
+      background: #f8faf9;
+      font-size: 34px;
+      cursor: pointer;
+    }
+
+    .promotion-choice:active {
+      transform: scale(.97);
+    }
+
     @media (min-width: 600px) {
       .piece-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -771,16 +875,16 @@
             <strong>מהלכים מיוחדים</strong>
             <span>הצרחה, קידום חייל ו־En Passant</span>
           </div>
-          <div class="level-status">🔒</div>
+          <div id="level2Status" class="level-status">🔒</div>
         </button>
 
-        <button class="level-card locked" onclick="openFutureLevel(3)">
+        <button id="level3Card" class="level-card locked" onclick="openFutureLevel(3)">
           <div class="level-number">3</div>
           <div class="level-info">
             <strong>מצבים פשוטים</strong>
             <span>שימוש בתנועות בתוך מצבי משחק</span>
           </div>
-          <div class="level-status">🔒</div>
+          <div id="level3Status" class="level-status">🔒</div>
         </button>
 
         <button class="level-card locked" onclick="openFutureLevel(4)">
@@ -947,6 +1051,125 @@
     </div>
   </section>
 
+  <section id="specialSelectScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="showLevels()">→</button>
+      <div class="topbar-title">שלב 2 — מהלכים מיוחדים</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div style="width:100%;max-width:520px;margin:0 auto 18px;">
+      <h2 style="margin-bottom:5px">מה נלמד עכשיו?</h2>
+      <p class="subtitle">
+        אפשר לבחור בכל סדר.
+        צריך להשלים את שלושת המהלכים המיוחדים כדי לעבור לשלב הבא.
+      </p>
+    </div>
+
+    <div id="specialGrid" class="special-grid"></div>
+
+  </section>
+
+  <section id="specialLessonScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="openLevel2()">→</button>
+      <div id="specialLessonTopTitle" class="topbar-title">מהלך מיוחד</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="lesson-card">
+
+      <div id="specialLessonIcon" class="lesson-piece" style="font-size:58px;direction:ltr;"></div>
+
+      <h2 id="specialLessonName" class="center"></h2>
+
+      <p id="specialLessonDescription" class="subtitle center"></p>
+
+      <div class="movement-box">
+        <strong>איך זה עובד?</strong>
+        <p id="specialLessonMovement"></p>
+      </div>
+
+      <div class="movement-box">
+        <strong>חשוב לזכור</strong>
+        <p id="specialLessonTip"></p>
+      </div>
+
+      <button class="primary-button" onclick="startSpecialPractice()">
+        מתחילים לתרגל
+      </button>
+
+    </div>
+  </section>
+
+  <section id="specialPracticeScreen" class="screen">
+
+    <div class="topbar">
+      <button class="back-button" onclick="returnToSpecialLesson()">→</button>
+      <div id="specialPracticeTopTitle" class="topbar-title">תרגול</div>
+      <div style="width:44px"></div>
+    </div>
+
+    <div class="practice-wrap">
+
+      <div class="practice-head center">
+        <div id="specialPracticeTitle" class="practice-title"></div>
+
+        <div id="specialPracticeInstruction" class="subtitle"></div>
+
+        <div class="streak">
+          <div id="specialDot1" class="streak-dot"></div>
+          <div id="specialDot2" class="streak-dot"></div>
+          <div id="specialDot3" class="streak-dot"></div>
+        </div>
+
+        <div id="specialBoardNote" class="special-board-note" style="display:none;"></div>
+      </div>
+
+      <div id="specialBoard" class="board"></div>
+
+      <div id="promotionPanel" class="promotion-panel">
+        <strong>בחרי לאיזה כלי לקדם את החייל</strong>
+
+        <div class="promotion-options">
+          <button class="promotion-choice" onclick="choosePromotion('queen')" aria-label="מלכה">♕</button>
+          <button class="promotion-choice" onclick="choosePromotion('rook')" aria-label="צריח">♖</button>
+          <button class="promotion-choice" onclick="choosePromotion('bishop')" aria-label="רץ">♗</button>
+          <button class="promotion-choice" onclick="choosePromotion('knight')" aria-label="פרש">♘</button>
+        </div>
+      </div>
+
+      <div id="specialFeedbackBox" class="feedback">
+        <strong>התור שלך</strong>
+        בחרי את המהלך הנכון.
+      </div>
+
+    </div>
+  </section>
+
+  <section id="specialCompleteScreen" class="screen center-screen">
+
+    <div class="card completion">
+
+      <div class="completion-icon">🎉</div>
+
+      <h2 id="specialCompleteHeading">מעולה!</h2>
+
+      <p id="specialCompleteText" class="subtitle"></p>
+
+      <button class="primary-button" onclick="openLevel2()">
+        חזרה למהלכים המיוחדים
+      </button>
+
+      <button class="secondary-button" onclick="showLevels()">
+        למסלול הלימוד
+      </button>
+
+    </div>
+  </section>
+
   <section id="settingsScreen" class="screen">
 
     <div class="topbar">
@@ -1088,6 +1311,35 @@
     }
   };
 
+  const specialMoves = {
+    castling: {
+      name: "הצרחה",
+      icon: "♔ ↔ ♖",
+      short: "המלך והצריח זזים יחד במהלך אחד.",
+      description: "הצרחה היא המהלך היחיד בשחמט שבו שני כלים זזים באותו תור: המלך והצריח.",
+      movement: "המלך זז שתי משבצות לכיוון הצריח, ואז הצריח עובר לצד השני של המלך.",
+      tip: "אפשר להצריח רק אם המלך והצריח לא זזו קודם, אין כלים ביניהם, והמלך לא בשח, לא עובר דרך שח ולא מסיים בשח."
+    },
+
+    promotion: {
+      name: "קידום חייל",
+      icon: "♙ ➜ ♕",
+      short: "חייל שמגיע לסוף הלוח הופך לכלי אחר.",
+      description: "כשחייל מגיע לשורה האחרונה בצד של היריב, הוא חייב להפוך לכלי אחר.",
+      movement: "אחרי שהחייל מגיע לשורה האחרונה, אפשר לבחור מלכה, צריח, רץ או פרש.",
+      tip: "לא חייבים לבחור מלכה. מותר לבחור כל אחד מארבעת הכלים, גם אם כבר יש לך כלי כזה על הלוח."
+    },
+
+    enPassant: {
+      name: "En Passant",
+      icon: "♙ ✕ ♟",
+      short: "אכילה מיוחדת בין שני חיילים.",
+      description: "אם חייל יריב מתקדם שתי משבצות במהלך אחד ונעצר ממש ליד החייל שלך, לפעמים אפשר לאכול אותו בדרך מיוחדת.",
+      movement: "החייל שלך זז באלכסון למשבצת שהחייל היריב דילג עליה, והחייל היריב יורד מהלוח.",
+      tip: "אפשר לבצע En Passant רק מיד במהלך הבא. אם בחרת מהלך אחר, האפשרות נעלמת."
+    }
+  };
+
   const stageNames = {
     2: "מהלכים מיוחדים",
     3: "מצבים פשוטים",
@@ -1103,29 +1355,52 @@
   let isTransitioning = false;
   let settingsReturnScreen = "homeScreen";
 
+  let selectedSpecial = null;
+  let specialStreak = 0;
+  let specialChallenge = null;
+  let specialTransitioning = false;
+
   let piecePosition = {
     row: 4,
     col: 4
   };
 
+  function normalizeProgress(progress = {}) {
+    const completedPieces =
+      Array.isArray(progress.completedPieces)
+        ? [...new Set(progress.completedPieces.filter(key => Object.keys(pieces).includes(key)))]
+        : [];
+
+    const completedSpecialMoves =
+      Array.isArray(progress.completedSpecialMoves)
+        ? [...new Set(progress.completedSpecialMoves.filter(key => Object.keys(specialMoves).includes(key)))]
+        : [];
+
+    return {
+      ...progress,
+      completedPieces,
+      completedSpecialMoves
+    };
+  }
+
   function getProgress() {
     const saved = localStorage.getItem("chessTrainerProgress");
 
     if (!saved) {
-      return { completedPieces: [] };
+      return normalizeProgress();
     }
 
     try {
-      return JSON.parse(saved);
+      return normalizeProgress(JSON.parse(saved));
     } catch {
-      return { completedPieces: [] };
+      return normalizeProgress();
     }
   }
 
   function saveProgress(progress) {
     localStorage.setItem(
       "chessTrainerProgress",
-      JSON.stringify(progress)
+      JSON.stringify(normalizeProgress(progress))
     );
   }
 
@@ -1155,6 +1430,7 @@
   function updateLevelProgress() {
     const progress = getProgress();
     const completed = progress.completedPieces.length;
+    const specialCompleted = progress.completedSpecialMoves.length;
     const percent = Math.round((completed / 6) * 100);
 
     document.getElementById("overallProgressText").textContent =
@@ -1164,19 +1440,37 @@
       percent + "%";
 
     const level1Status = document.getElementById("level1Status");
-
     const level2 = document.getElementById("level2Card");
+    const level2Status = document.getElementById("level2Status");
+    const level3 = document.getElementById("level3Card");
+    const level3Status = document.getElementById("level3Status");
 
     if (completed === 6) {
       level1Status.textContent = "✅";
       level2.classList.remove("locked");
-      level2.querySelector(".level-status").textContent = "▶️";
+
+      if (specialCompleted === 3) {
+        level2Status.textContent = "✅";
+        level3.classList.remove("locked");
+        level3Status.textContent = "▶️";
+      } else {
+        level2Status.textContent =
+          specialCompleted > 0
+            ? specialCompleted + "/3"
+            : "▶️";
+
+        level3.classList.add("locked");
+        level3Status.textContent = "🔒";
+      }
     } else {
       level1Status.textContent =
         completed > 0 ? completed + "/6" : "▶️";
 
       level2.classList.add("locked");
-      level2.querySelector(".level-status").textContent = "🔒";
+      level2Status.textContent = "🔒";
+
+      level3.classList.add("locked");
+      level3Status.textContent = "🔒";
     }
   }
 
@@ -1548,15 +1842,582 @@
     showScreen("pieceCompleteScreen");
   }
 
-  function openFutureLevel(level) {
+  function openLevel2() {
+    const progress = getProgress();
+
+    if (progress.completedPieces.length !== 6) {
+      document.getElementById("futureTitle").textContent =
+        "השלב עדיין נעול 🔒";
+
+      showScreen("futureScreen");
+      return;
+    }
+
+    renderSpecialGrid();
+    showScreen("specialSelectScreen");
+  }
+
+  function renderSpecialGrid() {
+    const grid = document.getElementById("specialGrid");
+    const progress = getProgress();
+
+    grid.innerHTML = "";
+
+    Object.keys(specialMoves).forEach(key => {
+      const move = specialMoves[key];
+      const completed =
+        progress.completedSpecialMoves.includes(key);
+
+      const button = document.createElement("button");
+
+      button.className =
+        "special-card" +
+        (completed ? " completed" : "");
+
+      button.onclick =
+        () => openSpecialLesson(key);
+
+      button.innerHTML = `
+        ${
+          completed
+            ? '<div class="complete-badge">✓</div>'
+            : ""
+        }
+
+        <div class="special-card-icon">
+          ${move.icon}
+        </div>
+
+        <div class="special-card-info">
+          <strong>${move.name}</strong>
+          <span>${move.short}</span>
+          <span style="margin-top:6px;">
+            ${
+              completed
+                ? "הושלם"
+                : "3 הצלחות רצופות"
+            }
+          </span>
+        </div>
+      `;
+
+      grid.appendChild(button);
+    });
+  }
+
+  function openSpecialLesson(key) {
+    selectedSpecial = key;
+    const move = specialMoves[key];
+
+    document.getElementById("specialLessonTopTitle").textContent =
+      "לומדים: " + move.name;
+
+    document.getElementById("specialLessonIcon").textContent =
+      move.icon;
+
+    document.getElementById("specialLessonName").textContent =
+      move.name;
+
+    document.getElementById("specialLessonDescription").textContent =
+      move.description;
+
+    document.getElementById("specialLessonMovement").textContent =
+      move.movement;
+
+    document.getElementById("specialLessonTip").textContent =
+      move.tip;
+
+    showScreen("specialLessonScreen");
+  }
+
+  function returnToSpecialLesson() {
+    if (!selectedSpecial) {
+      openLevel2();
+      return;
+    }
+
+    openSpecialLesson(selectedSpecial);
+  }
+
+  function startSpecialPractice() {
+    specialStreak = 0;
+    specialTransitioning = false;
+
+    updateSpecialStreak();
+    hidePromotionPanel();
+    createSpecialChallenge();
+
+    const move = specialMoves[selectedSpecial];
+
+    document.getElementById("specialPracticeTopTitle").textContent =
+      "תרגול " + move.name;
+
+    document.getElementById("specialPracticeTitle").textContent =
+      move.name;
+
+    setSpecialFeedback(
+      "התור שלך",
+      "בחרי את המהלך הנכון.",
+      ""
+    );
+
+    showScreen("specialPracticeScreen");
+  }
+
+  function createSpecialChallenge() {
+    specialTransitioning = false;
+    hidePromotionPanel();
+
+    if (selectedSpecial === "castling") {
+      const side = Math.random() < 0.5 ? "king" : "queen";
+
+      specialChallenge = {
+        type: "castling",
+        side,
+        king: { row: 7, col: 4 },
+        leftRook: { row: 7, col: 0 },
+        rightRook: { row: 7, col: 7 },
+        completed: false
+      };
+
+      document.getElementById("specialPracticeInstruction").textContent =
+        side === "king"
+          ? "בצעי הצרחה קצרה: לחצי על המשבצת שאליה המלך צריך לעבור."
+          : "בצעי הצרחה ארוכה: לחצי על המשבצת שאליה המלך צריך לעבור.";
+
+      setSpecialBoardNote(
+        side === "king"
+          ? "הצרחה קצרה = המלך זז שתי משבצות לכיוון הצריח הימני."
+          : "הצרחה ארוכה = המלך זז שתי משבצות לכיוון הצריח השמאלי."
+      );
+    }
+
+    if (selectedSpecial === "promotion") {
+      const col = randomInt(0, 7);
+
+      specialChallenge = {
+        type: "promotion",
+        pawn: { row: 1, col },
+        promotionSquare: { row: 0, col },
+        promotedTo: null,
+        awaitingChoice: false
+      };
+
+      document.getElementById("specialPracticeInstruction").textContent =
+        "הביאי את החייל לשורה האחרונה ואז בחרי לאיזה כלי לקדם אותו.";
+
+      setSpecialBoardNote(
+        "אפשר לבחור מלכה, צריח, רץ או פרש."
+      );
+    }
+
+    if (selectedSpecial === "enPassant") {
+      const ownCol = randomInt(1, 6);
+      const direction = Math.random() < 0.5 ? -1 : 1;
+      const enemyCol = ownCol + direction;
+
+      specialChallenge = {
+        type: "enPassant",
+        ownPawn: { row: 3, col: ownCol },
+        enemyPawn: { row: 3, col: enemyCol },
+        target: { row: 2, col: enemyCol },
+        completed: false
+      };
+
+      document.getElementById("specialPracticeInstruction").textContent =
+        "החייל השחור בדיוק זז שתי משבצות ונעצר לידך. לאן החייל הלבן צריך לזוז כדי לאכול En Passant?";
+
+      setSpecialBoardNote(
+        "המסגרת הזהובה מסמנת את החייל השחור שבדיוק התקדם שתי משבצות."
+      );
+    }
+
+    renderSpecialBoard();
+  }
+
+  function renderSpecialBoard() {
+    const board = document.getElementById("specialBoard");
+    board.innerHTML = "";
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const square = document.createElement("button");
+
+        square.className =
+          "square " +
+          ((row + col) % 2 === 0 ? "light" : "dark");
+
+        let symbol = "";
+
+        if (specialChallenge?.type === "castling") {
+          if (
+            row === specialChallenge.king.row &&
+            col === specialChallenge.king.col
+          ) {
+            symbol = "♔";
+            square.classList.add("selected");
+          }
+
+          if (
+            row === specialChallenge.leftRook.row &&
+            col === specialChallenge.leftRook.col
+          ) {
+            symbol = "♖";
+          }
+
+          if (
+            row === specialChallenge.rightRook.row &&
+            col === specialChallenge.rightRook.col
+          ) {
+            symbol = "♖";
+          }
+        }
+
+        if (specialChallenge?.type === "promotion") {
+          if (
+            row === specialChallenge.pawn.row &&
+            col === specialChallenge.pawn.col
+          ) {
+            symbol =
+              specialChallenge.promotedTo
+                ? promotionSymbol(specialChallenge.promotedTo)
+                : "♙";
+
+            square.classList.add("selected");
+          }
+        }
+
+        if (specialChallenge?.type === "enPassant") {
+          if (
+            row === specialChallenge.ownPawn.row &&
+            col === specialChallenge.ownPawn.col
+          ) {
+            symbol = "♙";
+            square.classList.add("selected");
+          }
+
+          if (
+            !specialChallenge.completed &&
+            row === specialChallenge.enemyPawn.row &&
+            col === specialChallenge.enemyPawn.col
+          ) {
+            symbol = "♟";
+            square.classList.add("special-target");
+          }
+        }
+
+        square.textContent = symbol;
+
+        square.onclick =
+          () => attemptSpecialMove(row, col);
+
+        board.appendChild(square);
+      }
+    }
+  }
+
+  function attemptSpecialMove(row, col) {
+    if (specialTransitioning || !specialChallenge) {
+      return;
+    }
+
+    if (selectedSpecial === "castling") {
+      attemptCastling(row, col);
+      return;
+    }
+
+    if (selectedSpecial === "promotion") {
+      attemptPromotion(row, col);
+      return;
+    }
+
+    if (selectedSpecial === "enPassant") {
+      attemptEnPassant(row, col);
+    }
+  }
+
+  function attemptCastling(row, col) {
+    const expectedCol =
+      specialChallenge.side === "king"
+        ? 6
+        : 2;
+
+    if (row === 7 && col === expectedCol) {
+      specialTransitioning = true;
+
+      specialChallenge.king = {
+        row: 7,
+        col: expectedCol
+      };
+
+      if (specialChallenge.side === "king") {
+        specialChallenge.rightRook = {
+          row: 7,
+          col: 5
+        };
+      } else {
+        specialChallenge.leftRook = {
+          row: 7,
+          col: 3
+        };
+      }
+
+      renderSpecialBoard();
+      registerSpecialSuccess(
+        "נכון! המלך זז שתי משבצות והצריח עבר לצד השני שלו."
+      );
+    } else {
+      registerSpecialMistake(
+        "בהצרחה המלך זז בדיוק שתי משבצות לכיוון הצריח."
+      );
+    }
+  }
+
+  function attemptPromotion(row, col) {
+    if (
+      row === specialChallenge.promotionSquare.row &&
+      col === specialChallenge.promotionSquare.col
+    ) {
+      specialTransitioning = true;
+      specialChallenge.pawn = {
+        row,
+        col
+      };
+      specialChallenge.awaitingChoice = true;
+
+      renderSpecialBoard();
+      showPromotionPanel();
+
+      setSpecialFeedback(
+        "הגעת לסוף! ✅",
+        "עכשיו בחרי מלכה, צריח, רץ או פרש.",
+        "good"
+      );
+    } else {
+      registerSpecialMistake(
+        "קידום קורה רק כשהחייל מגיע לשורה האחרונה."
+      );
+    }
+  }
+
+  function choosePromotion(type) {
+    if (
+      selectedSpecial !== "promotion" ||
+      !specialChallenge ||
+      !specialChallenge.awaitingChoice
+    ) {
+      return;
+    }
+
+    const allowed =
+      ["queen", "rook", "bishop", "knight"];
+
+    if (!allowed.includes(type)) {
+      return;
+    }
+
+    specialChallenge.promotedTo = type;
+    specialChallenge.awaitingChoice = false;
+    hidePromotionPanel();
+    renderSpecialBoard();
+
+    registerSpecialSuccess(
+      "נכון! החייל הפך ל" +
+      promotionName(type) +
+      "."
+    );
+  }
+
+  function attemptEnPassant(row, col) {
+    if (
+      row === specialChallenge.target.row &&
+      col === specialChallenge.target.col
+    ) {
+      specialTransitioning = true;
+      specialChallenge.ownPawn = {
+        row,
+        col
+      };
+      specialChallenge.completed = true;
+
+      renderSpecialBoard();
+
+      registerSpecialSuccess(
+        "נכון! החייל הלבן עבר באלכסון והחייל השחור ירד מהלוח."
+      );
+    } else {
+      registerSpecialMistake(
+        "ב־En Passant זזים באלכסון למשבצת שהחייל היריב דילג עליה."
+      );
+    }
+  }
+
+  function registerSpecialSuccess(message) {
+    specialStreak++;
+    updateSpecialStreak();
+
+    setSpecialFeedback(
+      "נכון! ✅",
+      specialStreak < 3
+        ? message
+        : "שלוש הצלחות רצופות!",
+      "good"
+    );
+
+    if (specialStreak >= 3) {
+      setTimeout(
+        completeCurrentSpecialMove,
+        1000
+      );
+      return;
+    }
+
+    setTimeout(
+      () => {
+        createSpecialChallenge();
+
+        setSpecialFeedback(
+          "התור שלך",
+          "עוד הצלחה אחת בדרך לסיום.",
+          ""
+        );
+      },
+      1000
+    );
+  }
+
+  function registerSpecialMistake(message) {
+    specialStreak = 0;
+    updateSpecialStreak();
+
+    setSpecialFeedback(
+      "לא בדיוק",
+      message,
+      "bad"
+    );
+  }
+
+  function updateSpecialStreak() {
+    for (let i = 1; i <= 3; i++) {
+      const dot =
+        document.getElementById("specialDot" + i);
+
+      dot.classList.toggle(
+        "on",
+        i <= specialStreak
+      );
+    }
+  }
+
+  function setSpecialFeedback(title, text, type) {
+    const box =
+      document.getElementById("specialFeedbackBox");
+
+    box.className = "feedback";
+
+    if (type) {
+      box.classList.add(type);
+    }
+
+    box.innerHTML = `
+      <strong>${title}</strong>
+      ${text}
+    `;
+  }
+
+  function setSpecialBoardNote(text) {
+    const note =
+      document.getElementById("specialBoardNote");
+
+    note.textContent = text;
+    note.style.display = text ? "block" : "none";
+  }
+
+  function showPromotionPanel() {
+    document
+      .getElementById("promotionPanel")
+      .classList.add("show");
+  }
+
+  function hidePromotionPanel() {
+    document
+      .getElementById("promotionPanel")
+      .classList.remove("show");
+  }
+
+  function promotionSymbol(type) {
+    return {
+      queen: "♕",
+      rook: "♖",
+      bishop: "♗",
+      knight: "♘"
+    }[type] || "♙";
+  }
+
+  function promotionName(type) {
+    return {
+      queen: "מלכה",
+      rook: "צריח",
+      bishop: "רץ",
+      knight: "פרש"
+    }[type] || "כלי";
+  }
+
+  function completeCurrentSpecialMove() {
     const progress = getProgress();
 
     if (
-      level === 2 &&
-      progress.completedPieces.length === 6
+      !progress.completedSpecialMoves.includes(
+        selectedSpecial
+      )
+    ) {
+      progress.completedSpecialMoves.push(
+        selectedSpecial
+      );
+    }
+
+    saveProgress(progress);
+
+    const allDone =
+      progress.completedSpecialMoves.length === 3;
+
+    document.getElementById("specialCompleteHeading").textContent =
+      allDone
+        ? "שלב 2 הושלם! 🎉"
+        : "מעולה!";
+
+    document.getElementById("specialCompleteText").textContent =
+      allDone
+        ? "השלמת את שלושת המהלכים המיוחדים. שלב 3 נפתח."
+        : "השלמת את " +
+          specialMoves[selectedSpecial].name +
+          " עם 3 הצלחות רצופות.";
+
+    showScreen("specialCompleteScreen");
+  }
+
+  function openFutureLevel(level) {
+    const progress = getProgress();
+
+    if (level === 2) {
+      if (progress.completedPieces.length === 6) {
+        openLevel2();
+        return;
+      }
+
+      document.getElementById("futureTitle").textContent =
+        "השלב עדיין נעול 🔒";
+
+      showScreen("futureScreen");
+      return;
+    }
+
+    if (
+      level === 3 &&
+      progress.completedSpecialMoves.length === 3
     ) {
       document.getElementById("futureTitle").textContent =
-        "שלב 2 — " + stageNames[level];
+        "שלב 3 — " + stageNames[level];
 
       showScreen("futureScreen");
       return;
@@ -1733,6 +2594,9 @@
       const allowedPieces =
         Object.keys(pieces);
 
+      const allowedSpecialMoves =
+        Object.keys(specialMoves);
+
       const completedPieces =
         [...new Set(
           payload.progress.completedPieces.filter(
@@ -1740,9 +2604,19 @@
           )
         )];
 
+      const completedSpecialMoves =
+        Array.isArray(payload.progress.completedSpecialMoves)
+          ? [...new Set(
+              payload.progress.completedSpecialMoves.filter(
+                key => allowedSpecialMoves.includes(key)
+              )
+            )]
+          : [];
+
       const restoredProgress = {
         ...payload.progress,
-        completedPieces
+        completedPieces,
+        completedSpecialMoves
       };
 
       const sure =
